@@ -1,6 +1,6 @@
 $(document).ready(function(){
 
-    $.getJSON('Dados/estados_cidades.json', function (data) {
+    $.get(URL, function (data) {
         var items = [];
         var options = '<option value="">escolha um estado</option>'; //Iniciando com um Option default	
         $.each(data, function (key, val) {
@@ -12,21 +12,24 @@ $(document).ready(function(){
         $("#estados").change(function () {	//Quando uma cidade for escolhida	
         
             var options_cidades = '';
-            var str = "";					
+            //var estado;					
             
             $("#estados option:selected").each(function () {
-                str += $(this).text(); //Pegando o Estado foi selecionado no Estado
+                estado ={
+                    state: $(this).text()
+                }; //Pegando o Estado foi selecionado no Estado
             });
             
-            $.each(data, function (key, val) {
-                if(val.nome == str) { //Se de todos os Estados, o for de encontro com o que fora selecionado, entao entre no IF			
-                    $.each(val.cidades, function (key_city, val_city) { //Dentro do Estado, Pegue e adicione as Cidades no Select
-                        options_cidades += '<option value="' + val_city + '">' + val_city + '</option>';
-                    });							
-                }
+            $.get(URL, estado, function(data){
+                $.each(data, function (key, val) {
+                    if(val.nome == estado) { //Se de todos os Estados, o for de encontro com o que fora selecionado, entao entre no IF			
+                        $.each(val.cidades, function (key_city, val_city) { //Dentro do Estado, Pegue e adicione as Cidades no Select
+                            options_cidades += '<option value="' + val_city + '">' + val_city + '</option>';
+                        });							
+                    }
+                });
+                $("#cidades").html(options_cidades); //Adicione as Cidades no Select
             });
-            $("#cidades").html(options_cidades); //Adicione as Cidades no Select
-            
         }).change();		
     
     });
@@ -47,7 +50,7 @@ $(document).ready(function(){
 		$("#raz_soc").val(valor)
     }); 
 
-    $('#cadastrar').click(function (e) { //Quando o botao do formulario e acionado
+    $('#cadaestadoar').click(function (e) { //Quando o botao do formulario e acionado
         $.validator.addMethod("cnpj", function(cnpj, element) {
             cnpj = jQuery.trim(cnpj);
             var numeros, digitos, soma, i, resultado, pos, tamanho, digitos_iguais;
@@ -65,8 +68,8 @@ $(document).ready(function(){
 
             if (!digitos_iguais){
                 tamanho = cnpj.length - 2
-                numeros = cnpj.substring(0,tamanho);
-                digitos = cnpj.substring(tamanho);
+                numeros = cnpj.subestadoing(0,tamanho);
+                digitos = cnpj.subestadoing(tamanho);
                 soma = 0;
                 pos = tamanho - 7;
 
@@ -81,7 +84,7 @@ $(document).ready(function(){
                 return this.optional(element) || false;
             }
             tamanho = tamanho + 1;
-            numeros = cnpj.substring(0,tamanho);
+            numeros = cnpj.subestadoing(0,tamanho);
             soma = 0;
             pos = tamanho - 7;
             for (i = tamanho; i >= 1; i--){
@@ -129,7 +132,7 @@ $(document).ready(function(){
             },
             submitHandler: function(form){
                 //Aqui pega o formulário e o converte em JSON
-                var json = JSON.parse(JSON.stringify(jQuery('#myform').serializeArray()));
+                var json = JSON.parse(JSON.estadoingify(jQuery('#myform').serializeArray()));
                 
                 //Abro uma conexão com o outro servidor, do tipo Post, passo a URL da API, 
                 $.post({
@@ -139,27 +142,27 @@ $(document).ready(function(){
                     data: json, //Enviando o formulario em formato JSON
                     contentType: 'application/x-www-form-urlencoded;charset=UTF-8', //Envio em URLEncoded
                     success: function(data) {
-                         alert('Cadastro realizado com Sucesso');
+                         alert('Cadaestadoo realizado com Sucesso');
                          location.href("./LoginEmp.html")
                     },
                     error: function(request, status, erro){
                         //Captando o erro retornado da API
                         var erroJ = JSON.parse(request.responseText);
 
-                        //Se o erro for igual a "Email is already in use !", significa que Email ja possui cadastro
+                        //Se o erro for igual a "Email is already in use !", significa que Email ja possui cadaestadoo
                         if(erroJ.data == "Email is already in use !"){
-                            alert("Email informado já possui cadastro");
+                            alert("Email informado já possui cadaestadoo");
                         };
-                        ////Se o erro for igual a "CPF is already in use !", significa que CPF ja possui cadastro
+                        ////Se o erro for igual a "CPF is already in use !", significa que CPF ja possui cadaestadoo
                         if(erroJ.data == "CNPJ is already in use !"){
-                            alert("CNPJ informado já possui Cadastro");
+                            alert("CNPJ informado já possui Cadaestadoo");
                         }
                     }
                 }).done(function(result){
                         //Aqui será tratada à resposta do Servidor
                 }).fail(function(jqXHR,textStatus,errorThrown){
                         //alert(errorThrown);
-                        //Aqui será mostrado o erro que retornará do Servidor
+                        //Aqui será moestadoado o erro que retornará do Servidor
                 });
             }                
         });
